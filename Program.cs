@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System.Text;
-
+﻿
 void Translation(Dictionary<string, string> dict)
 {
     while(true)
@@ -11,6 +9,7 @@ void Translation(Dictionary<string, string> dict)
         keyInput = keyInput.ToLower();
 
         if (keyInput == "back") break;
+        if (string.IsNullOrWhiteSpace(keyInput)) continue;
 
         if (dict.ContainsKey(keyInput))
         {
@@ -18,7 +17,7 @@ void Translation(Dictionary<string, string> dict)
         }
         else
         {
-            Console.WriteLine($"Gloasry don't have '{keyInput}' word");
+            Console.WriteLine($"Glossary don't have '{keyInput}' word");
         }
     }
 }
@@ -27,24 +26,28 @@ void AddNewWord(Dictionary<string, string> dict)
 {
     while (true)
     {
-        Console.WriteLine("Enter english word for add to glosary or 'back' for return to menu");
+        Console.WriteLine("Enter english word for add to glossary or 'back' for return to menu");
         string keyInput = Console.ReadLine()!;
         keyInput = keyInput.ToLower();
+
         if (keyInput == "back") break;
+        if (string.IsNullOrWhiteSpace(keyInput)) continue;
 
         if (dict.ContainsKey(keyInput))
         {
-            Console.WriteLine($"Glosary already have '{keyInput}' word");
+            Console.WriteLine($"Glossary already have '{keyInput}' word");
             continue;
         }
 
-        Console.WriteLine("Enter ukrainian word for add translate to glosary or 'back' for return to menu");
+        Console.WriteLine("Enter ukrainian word for add translate to glossary or 'back' for return to menu");
         string valueInput = Console.ReadLine()!;
         valueInput = valueInput.ToLower();
+
         if (valueInput == "back") break;
+        if (string.IsNullOrWhiteSpace(valueInput)) continue;
 
         dict.Add(keyInput, valueInput);
-        Console.WriteLine($"A new word '{valueInput}' was added to gloasary");
+        Console.WriteLine($"A new word '{valueInput}' was added to glossary");
     }
 }
 
@@ -52,10 +55,12 @@ void DeleteWord(Dictionary<string, string> dict)
 {
     while (true)
     {
-        Console.WriteLine("Enter english word to delete from glosary or 'back' for return to menu");
+        Console.WriteLine("Enter english word to delete from glossary or 'back' for return to menu");
         string keyInput = Console.ReadLine()!;
         keyInput = keyInput.ToLower();
+
         if (keyInput == "back") break;
+        if (string.IsNullOrWhiteSpace(keyInput)) continue;
 
         if (dict.ContainsKey(keyInput))
         {
@@ -64,7 +69,7 @@ void DeleteWord(Dictionary<string, string> dict)
         }
         else
         {
-            Console.WriteLine($"Gloasey dont have '{keyInput}' word");
+            Console.WriteLine($"Glossary doesn't have '{keyInput}' word");
         }
     }
 }
@@ -94,6 +99,7 @@ void Test(Dictionary<string, string> dict)
         answerInput = answerInput.ToLower();
 
         if (answerInput == "back") break;
+        if (string.IsNullOrWhiteSpace(answerInput)) continue;
 
         if (dict[key] == answerInput)
         {
@@ -107,40 +113,30 @@ void Test(Dictionary<string, string> dict)
         totalWords++;
     }
 
-    Console.WriteLine($"You answer correct {correctWords}/{totalWords}");
+    Console.WriteLine($"You answered correctly {correctWords}/{totalWords}");
 }
 
-Dictionary<string, string> ReadFromFile(string filePath)
+IEnumerable<KeyValuePair<string, string>> ReadFromFile(string filePath)
 {
-    var result = new Dictionary<string, string>();
-
     if (!File.Exists(filePath))
     {
-        return result;
+        return Enumerable.Empty<KeyValuePair<string, string>>();
     }
 
-    string[] lines = File.ReadAllLines(filePath);
+    return File.ReadLines(filePath)
+        .Where(line => !string.IsNullOrWhiteSpace(line))
+        .Select(line => line.Split(" - "))
+        .Where(parts => parts.Length == 2)
+        .Select(parts => new KeyValuePair<string, string>(parts[0], parts[1]));
 
-    foreach (string line in lines)
-    {
-        if (string.IsNullOrWhiteSpace(line)) continue;
-        string[] keyValue = line.Split(" - ");
-        result[keyValue[0]] = keyValue[1];
-    }
-
-    return result;
 }
 
 void WriteToFile(string filePath, Dictionary<string, string> dict)
 {
-    var glossaryText = new List<string>(dict.Count);
-
-    foreach (string key in dict.Keys)
-    {
-        glossaryText.Add($"{key} - {dict[key]}");
-    }
+    var glossaryText = dict.Select(kvp => $"{kvp.Key} - {kvp.Value}");
 
     File.WriteAllLines(filePath, glossaryText);
+    Console.WriteLine("All words were successfully written to the file");
 }
 
 string projectDirectory = Directory.GetCurrentDirectory();
@@ -155,7 +151,13 @@ if (!Directory.Exists(glossaryPath))
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 Console.InputEncoding = System.Text.Encoding.UTF8;
 
-Dictionary<string, string> glossary = ReadFromFile(glossaryFile);
+var glossary = new Dictionary<string, string>();
+
+foreach (var kvp in ReadFromFile(glossaryFile))
+{
+    glossary[kvp.Key] = kvp.Value;
+}
+Console.WriteLine("All words were successfully read from the file");
 
 while (true)
 {
