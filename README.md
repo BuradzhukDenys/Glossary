@@ -1,16 +1,16 @@
 # Glossary
 
 ## Description
-This project provide glossary work in C#. In this project was used C# collections.
+A console-based glossary application built with C#. This project demonstrates the practical use of C# collections and basic data persistence.
 
 ## Features
-- Translate words from english to ukrainian
-- Add new words
-- Delete existing words from glossary
-- Check words in glossary
-- Make test, where program show random english word from glossary and you should be translate to ukrainian
+* Translate words from English to Ukrainian
+* Add new words to the dictionary
+* Delete existing words from the dictionary
+* View and check all available words
+* Quiz Mode: The program displays a random English word from the glossary, and you must translate it to Ukrainian
 
 ## Technologies
-- CRUD technology, program save new words to file and read from this file
-- C# collections (Dictionary, List)
-- File I/O, save and load from file
+* C# Collections (`Dictionary`, `List`)
+* File I/O (Saving and loading vocabulary from a text file)
+* CRUD operations
