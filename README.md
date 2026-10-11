@@ -26,8 +26,8 @@ A console-based glossary application built with C#. This project demonstrates th
 .NET 8 SDK
 
 ## How to run
-	```bash
-	git clone https://github.com/BuradzhukDenys/Glossary.git
-	cd Glossary
-	dotnet run
-	```
+```
+git clone https://github.com/BuradzhukDenys/Glossary.git
+cd Glossary
+dotnet run
+```
